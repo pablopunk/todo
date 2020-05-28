@@ -51,6 +51,15 @@ export default () => {
     return <span>Loading...</span>
   }
 
+  const handleNewTask = () => {
+    if (newTaskText) {
+      newTaskTextSet('')
+      createTask(newTaskText).then(() => {
+        mutate(allTasksQuery)
+      })
+    }
+  }
+
   return (
     <>
       <h1>Tasks</h1>
@@ -58,22 +67,17 @@ export default () => {
         type="text"
         value={newTaskText}
         onChange={(e) => newTaskTextSet(e.target.value)}
-      />
-      <button
-        onClick={() => {
-          if (newTaskText) {
-            createTask(newTaskText).then(() => {
-              mutate(allTasksQuery)
-            })
+        onKeyUp={(e) => {
+          if (e.key === 'Enter') {
+            handleNewTask()
           }
         }}
-      >
-        🤜🏻
-      </button>
+      />
+      <button onClick={handleNewTask}>🤜🏻</button>
       <ul>
         {data.allTasks.data.map((task) => (
           <li key={task._id}>
-            <button>✅</button>
+            <button onClick={() => alert('Not implemented')}>✅</button>
             <button
               style={{ marginRight: '2rem' }}
               onClick={() => {
