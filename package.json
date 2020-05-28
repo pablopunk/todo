@@ -1,0 +1,37 @@
+{
+  "name": "todo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "graphql-request": "^2.0.0",
+    "isomorphic-unfetch": "^3.0.0",
+    "next": "^9.4.4",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "swr": "^0.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^14.0.5",
+    "@types/react": "^16.9.35",
+    "husky": "*",
+    "prettier": "*",
+    "pretty-quick": "*",
+    "typescript": "^3.9.3"
+  },
+  "scripts": {
+    "dev": "next",
+    "start": "next start",
+    "build": "next build"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "pretty-quick --staged"
+    }
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "tabWidth": 2
+  }
+}

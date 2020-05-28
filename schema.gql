@@ -1,0 +1,9 @@
+type Task @collection(name: "tasks") {
+  content: String!
+  completed: Boolean!
+}
+
+type Query {
+  allTasks: [Task!]
+  todosByCompleted(completed: Boolean!): [Task!]
+}
