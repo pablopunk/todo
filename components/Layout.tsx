@@ -4,7 +4,7 @@ export default (props) => {
   return (
     <>
       <div className="topbar">
-        <button onClick={() => window['__toggleDarkMode']()}>🌒</button>
+        <button onClick={() => window['__toggleDarkMode']()}>🌙</button>
       </div>
       <div className="main-wrapper">
         <main>{props.children}</main>
@@ -12,8 +12,11 @@ export default (props) => {
       <style jsx global>{`
         body {
           --color-fg: #222;
+          --color-fg-dim: #a3a3a3;
           --color-bg: white;
           --color-bg-dim: #ddd;
+
+          --transition-hover: 0.3s;
 
           margin: 0;
           padding: 0;
@@ -25,6 +28,7 @@ export default (props) => {
 
         body.dark {
           --color-fg: #ddd;
+          --color-fg-dim: #454545;
           --color-bg: black;
           --color-bg-dim: #222;
         }
@@ -41,10 +45,16 @@ export default (props) => {
         }
 
         button {
+          cursor: pointer;
           background-color: transparent;
           border: 1px solid var(--color-bg-dim);
           border-radius: 4px;
           padding: 0.7rem 1.5rem;
+          transition: background-color var(--transition-hover);
+        }
+
+        button:hover {
+          background-color: var(--color-bg-dim);
         }
 
         main {
@@ -68,6 +78,16 @@ export default (props) => {
           color: var(--color-fg);
           vertical-align: bottom;
           padding-left: 1rem;
+        }
+
+        small,
+        .crossed,
+        .fg-dim {
+          color: var(--color-fg-dim);
+        }
+
+        .crossed {
+          text-decoration: line-through;
         }
       `}</style>
     </>

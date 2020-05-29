@@ -37,6 +37,22 @@ export default (props) => {
     )
   }
 
+  const handleCompletedClick = (task) => {
+    const updatedTask = { ...task, completed: !task.completed }
+    const updatedTaskWithoutId = { ...updatedTask }
+    delete updatedTaskWithoutId._id
+    poster('/api/task/' + task._id, updatedTaskWithoutId)
+    mutate(
+      data.map((t) => (t._id === task._id ? updatedTask : t)),
+      false
+    )
+  }
+
+  // sort. completed===false first
+  const tasks = data.sort((a, b) =>
+    a.completed === b.completed ? 0 : a.completed ? 1 : -1
+  )
+
   return (
     <Layout>
       <h1>Tasks</h1>
@@ -52,15 +68,25 @@ export default (props) => {
         }}
       />
       <ul>
-        {data.map((task) => (
+        {tasks.length === 0 && <small>Empty list</small>}
+        {tasks.map((task) => (
           <li key={task._id || uniqueStr()}>
             <span>
-              <button
-                onClick={() => alert('Not implemented')}
-                disabled={!task._id}
-              >
-                ✅
-              </button>
+              {task.completed ? (
+                <button
+                  onClick={() => handleCompletedClick(task)}
+                  disabled={!task._id}
+                >
+                  ♻️
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleCompletedClick(task)}
+                  disabled={!task._id}
+                >
+                  ✅
+                </button>
+              )}
               <button
                 style={{ marginRight: '2rem' }}
                 onClick={() => handleDeleteTask(task)}
@@ -69,7 +95,9 @@ export default (props) => {
                 ❌
               </button>
             </span>
-            <span>{task.content}</span>
+            <span className={task.completed ? 'crossed' : ''}>
+              {task.content}
+            </span>
           </li>
         ))}
       </ul>
