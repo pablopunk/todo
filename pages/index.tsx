@@ -38,8 +38,10 @@ const deleteTaskQuery = `
 const createTask = (content) => request(createTaskQuery, { content })
 const deleteTask = (id) => request(deleteTaskQuery, { id })
 
-export default () => {
-  const { data, error } = useSWR(allTasksQuery, fetcher)
+export default (props) => {
+  const { data, error } = useSWR(allTasksQuery, fetcher, {
+    initialData: props.data,
+  })
   const [newTaskText, newTaskTextSet] = React.useState('')
 
   if (error) {
@@ -94,4 +96,10 @@ export default () => {
       </ul>
     </>
   )
+}
+
+export async function getServerSideProps() {
+  const data = await fetcher(allTasksQuery)
+
+  return { props: { data } }
 }
