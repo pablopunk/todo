@@ -53,10 +53,16 @@ export default (props) => {
       <ul>
         {data.map((task) => (
           <li key={task._id || uniqueStr()}>
-            <button onClick={() => alert('Not implemented')}>✅</button>
+            <button
+              onClick={() => alert('Not implemented')}
+              disabled={!task._id}
+            >
+              ✅
+            </button>
             <button
               style={{ marginRight: '2rem' }}
               onClick={() => handleDeleteTask(task)}
+              disabled={!task._id}
             >
               ❌
             </button>

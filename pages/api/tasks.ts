@@ -36,7 +36,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       data = await request(createTaskQuery, {
         content: req.body.content,
       })
-      res.status(200).json({ _id: data.createTask._id })
+      res.status(200).json(data.createTask)
       break
     default:
       res.setHeader('Allow', ['GET', 'PUT'])
