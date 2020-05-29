@@ -68,9 +68,9 @@ export default (props) => {
 export async function getServerSideProps(ctx: NextPageContext) {
   const API =
     process.env.NODE_ENV === 'production'
-      ? 'https://localhost:3000'
+      ? 'https://todo.pablo.pink'
       : 'http://localhost:3000'
-  const data = await fetcher(API + '/api/tasks')
+  const data = await fetcher('/api/tasks')
 
   return { props: { data } }
 }
