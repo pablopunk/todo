@@ -30,7 +30,10 @@ export default (props) => {
 
   const handleDeleteTask = (task) => {
     deleter('/api/task/' + task._id)
-    mutate(data.filter(({ _id }) => _id !== task._id))
+    mutate(
+      data.filter(({ _id }) => _id !== task._id),
+      false
+    )
   }
 
   return (
