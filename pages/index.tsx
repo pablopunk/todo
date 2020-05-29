@@ -1,45 +1,10 @@
 import React from 'react'
-import useSWR, { mutate } from 'swr'
-import { fetcher, request } from 'lib/api'
-
-const allTasksQuery = `{
-  allTasks {
-    data {
-      _id
-      content
-      completed
-    }
-  }
-}`
-
-const createTaskQuery = `
-  mutation createTask($content: String!) {
-    createTask(data: {
-      content: $content,
-      completed: false
-    }) {
-      _id
-      content
-      completed
-    }
-  }
-`
-
-const deleteTaskQuery = `
-  mutation deleteTask($id: ID!) {
-    deleteTask(id: $id) {
-      _id
-      content
-      completed
-    }
-  }
-`
-
-const createTask = (content) => request(createTaskQuery, { content })
-const deleteTask = (id) => request(deleteTaskQuery, { id })
+import useSWR from 'swr'
+import { fetcher, poster, putter, deleter } from 'lib/api'
+import uniqueStr from 'unique-string'
 
 export default (props) => {
-  const { data, error } = useSWR(allTasksQuery, fetcher, {
+  const { data, error, mutate, isValidating } = useSWR('/api/tasks', fetcher, {
     initialData: props.data,
   })
   const [newTaskText, newTaskTextSet] = React.useState('')
@@ -53,13 +18,18 @@ export default (props) => {
     return <span>Loading...</span>
   }
 
-  const handleNewTask = () => {
+  const handleNewTask = async () => {
     if (newTaskText) {
       newTaskTextSet('')
-      createTask(newTaskText).then(() => {
-        mutate(allTasksQuery)
-      })
+      const newTask = { content: newTaskText }
+      await putter('/api/tasks', newTask)
+      mutate([...data, newTask])
     }
+  }
+
+  const handleDeleteTask = (task) => {
+    deleter('/api/task/' + task._id)
+    mutate(data.filter(({ _id }) => _id !== task._id))
   }
 
   return (
@@ -77,16 +47,12 @@ export default (props) => {
       />
       <button onClick={handleNewTask}>🤜🏻</button>
       <ul>
-        {data.allTasks.data.map((task) => (
-          <li key={task._id}>
+        {data.map((task) => (
+          <li key={task._id || uniqueStr()}>
             <button onClick={() => alert('Not implemented')}>✅</button>
             <button
               style={{ marginRight: '2rem' }}
-              onClick={() => {
-                deleteTask(task._id).then(() => {
-                  mutate(allTasksQuery)
-                })
-              }}
+              onClick={() => handleDeleteTask(task)}
             >
               ❌
             </button>
@@ -99,7 +65,11 @@ export default (props) => {
 }
 
 export async function getServerSideProps() {
-  const data = await fetcher(allTasksQuery)
+  const API =
+    process.env.NODE_ENV === 'production'
+      ? 'https://localhost'
+      : 'http://localhost:3000'
+  const data = await fetcher(API + '/api/tasks')
 
   return { props: { data } }
 }
