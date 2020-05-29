@@ -3,6 +3,7 @@ import useSWR from 'swr'
 import uniqueStr from 'unique-string'
 import { NextPageContext } from 'next'
 import { fetcher, poster, putter, deleter } from 'lib/api'
+import Layout from 'components/Layout'
 
 export default (props) => {
   const { data, error, mutate, isValidating } = useSWR('/api/tasks', fetcher, {
@@ -37,11 +38,12 @@ export default (props) => {
   }
 
   return (
-    <>
+    <Layout>
       <h1>Tasks</h1>
       <input
         type="text"
         value={newTaskText}
+        placeholder="New task"
         onChange={(e) => newTaskTextSet(e.target.value)}
         onKeyUp={(e) => {
           if (e.key === 'Enter') {
@@ -49,28 +51,42 @@ export default (props) => {
           }
         }}
       />
-      <button onClick={handleNewTask}>🤜🏻</button>
       <ul>
         {data.map((task) => (
           <li key={task._id || uniqueStr()}>
-            <button
-              onClick={() => alert('Not implemented')}
-              disabled={!task._id}
-            >
-              ✅
-            </button>
-            <button
-              style={{ marginRight: '2rem' }}
-              onClick={() => handleDeleteTask(task)}
-              disabled={!task._id}
-            >
-              ❌
-            </button>
-            {task.content}
+            <span>
+              <button
+                onClick={() => alert('Not implemented')}
+                disabled={!task._id}
+              >
+                ✅
+              </button>
+              <button
+                style={{ marginRight: '2rem' }}
+                onClick={() => handleDeleteTask(task)}
+                disabled={!task._id}
+              >
+                ❌
+              </button>
+            </span>
+            <span>{task.content}</span>
           </li>
         ))}
       </ul>
-    </>
+      <style jsx>{`
+        ul {
+          max-width: 400px;
+        }
+        li {
+          margin: 1rem 0;
+          display: flex;
+          align-items: flex-start;
+        }
+        li span {
+          display: flex;
+        }
+      `}</style>
+    </Layout>
   )
 }
 
