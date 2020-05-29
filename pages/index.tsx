@@ -1,7 +1,8 @@
 import React from 'react'
 import useSWR from 'swr'
-import { fetcher, poster, putter, deleter } from 'lib/api'
 import uniqueStr from 'unique-string'
+import { NextPageContext } from 'next'
+import { fetcher, poster, putter, deleter } from 'lib/api'
 
 export default (props) => {
   const { data, error, mutate, isValidating } = useSWR('/api/tasks', fetcher, {
@@ -64,10 +65,10 @@ export default (props) => {
   )
 }
 
-export async function getServerSideProps() {
+export async function getServerSideProps(ctx: NextPageContext) {
   const API =
     process.env.NODE_ENV === 'production'
-      ? 'https://localhost'
+      ? 'https://localhost:3000'
       : 'http://localhost:3000'
   const data = await fetcher(API + '/api/tasks')
 
