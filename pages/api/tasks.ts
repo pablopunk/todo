@@ -29,6 +29,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
   switch (req.method) {
     case 'GET':
       data = await request(allTasksQuery)
+      console.log(req.headers.authorization)
       res.setHeader('Cache-Control', 'No-Cache')
       res.status(200).json([...data.allTasks.data])
       break

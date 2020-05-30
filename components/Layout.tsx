@@ -5,6 +5,7 @@ export default (props) => {
     <>
       <div className="topbar">
         <button onClick={() => window['__toggleDarkMode']()}>🌙</button>
+        {props.loggedIn && <button onClick={props.logout}>Logout</button>}
       </div>
       <div className="main-wrapper">
         <main>{props.children}</main>
@@ -15,6 +16,7 @@ export default (props) => {
           --color-fg-dim: #a3a3a3;
           --color-bg: white;
           --color-bg-dim: #ddd;
+          --color-accent: royalblue;
 
           --transition-hover: 0.3s;
 
@@ -31,11 +33,14 @@ export default (props) => {
           --color-fg-dim: #454545;
           --color-bg: black;
           --color-bg-dim: #222;
+          --color-accent: #009789;
         }
 
         .topbar {
           position: relative;
           padding: 1rem 2rem;
+          display: flex;
+          justify-content: space-between;
         }
 
         .main-wrapper {
@@ -47,6 +52,7 @@ export default (props) => {
         button {
           cursor: pointer;
           background-color: transparent;
+          color: var(--color-fg);
           border: 1px solid var(--color-bg-dim);
           border-radius: 4px;
           padding: 0.7rem 1.5rem;
@@ -55,6 +61,11 @@ export default (props) => {
 
         button:hover {
           background-color: var(--color-bg-dim);
+        }
+
+        button[disabled]:hover {
+          background-color: var(--color-bg);
+          cursor: no-drop;
         }
 
         main {
@@ -88,6 +99,14 @@ export default (props) => {
 
         .crossed {
           text-decoration: line-through;
+        }
+
+        .accent-bg {
+          background-color: var(--color-accent);
+        }
+
+        .accent-fg {
+          color: var(--color-accent);
         }
       `}</style>
     </>
