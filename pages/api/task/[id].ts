@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { request } from 'lib/api'
+import { requireAuthentication } from 'lib/middleware'
 
 const taskByIdQuery = `query findTaskByID($id: ID!){
   findTaskByID(id: $id) {
@@ -26,22 +27,27 @@ const updateTaskMutation = `mutation updateTask($id: ID!, $data: TaskInput!){
 }`
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  let data
+  const user = await requireAuthentication(req, res)
+
   switch (req.method) {
     case 'GET':
-      data = await request(taskByIdQuery, { id: req.query.id })
-      res.status(200).json(data.findTaskByID)
+      const { findTaskById } = await request(taskByIdQuery, {
+        id: req.query.id,
+      })
+      res.status(200).json(findTaskById)
       break
     case 'POST':
-      data = await request(updateTaskMutation, {
+      const { updateTask } = await request(updateTaskMutation, {
         id: req.query.id,
         data: req.body,
       })
-      res.status(200).json(data.updateTask)
+      res.status(200).json(updateTask)
       break
     case 'DELETE':
-      data = await request(deleteTaskMutation, { id: req.query.id })
-      res.status(200).json(data.deleteTask)
+      const { deleteTask } = await request(deleteTaskMutation, {
+        id: req.query.id,
+      })
+      res.status(200).json(deleteTask)
       break
     default:
       res.setHeader('Allow', ['GET', 'POST', 'DELETE'])

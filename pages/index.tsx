@@ -6,7 +6,14 @@ import { validate } from 'email-validator'
 
 export default (props) => {
   const [email, emailSet] = React.useState('')
+  const [token, tokenSet] = React.useState(null)
   const auth = useMagicLink(process.env.NEXT_PUBLIC_MAGIC_LINK_API_KEY)
+
+  React.useEffect(() => {
+    if (auth.loggedIn) {
+      auth.magic.user.getIdToken().then(tokenSet)
+    }
+  }, [auth.loggedIn])
 
   if (!auth.loggedIn) {
     const loginNow = () => {
@@ -58,10 +65,14 @@ export default (props) => {
     )
   }
 
+  if (!token) {
+    return <span>Loading...</span>
+  }
+
   return (
     <Layout logout={auth.logout} loggedIn={auth.loggedIn}>
       <h1>Tasks</h1>
-      <Tasks data={props.data} auth={auth} />
+      <Tasks token={token} />
     </Layout>
   )
 }

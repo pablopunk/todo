@@ -4,14 +4,14 @@ import useSWR from 'swr'
 import useMagicLink from 'use-magic-link'
 import { poster, putter, deleter, fetcher } from 'lib/api'
 
-export default (props) => {
-  const token = props.auth?.magic?.user?.getIdToken()
+interface IProps {
+  token: string
+}
+
+export default ({ token }: IProps) => {
   const { data, error, mutate, isValidating } = useSWR(
     '/api/tasks',
-    fetcher(token),
-    {
-      initialData: props.data,
-    }
+    fetcher(token)
   )
   const [newTaskText, newTaskTextSet] = React.useState('')
 
@@ -34,7 +34,7 @@ export default (props) => {
   }
 
   const handleDeleteTask = (task) => {
-    deleter(fetch)('/api/task/' + task._id)
+    deleter(token)('/api/task/' + task._id)
     mutate(
       data.filter(({ _id }) => _id !== task._id),
       false

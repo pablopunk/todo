@@ -1,21 +1,15 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import { request } from 'lib/api'
-
-const allTasksQuery = `{
-  allTasks {
-    data {
-      _id
-      content
-      completed
-    }
-  }
-}`
+import { requireAuthentication } from 'lib/middleware'
 
 const createTaskQuery = `
-  mutation createTask($content: String!) {
+  mutation createTask($content: String!, $userId: ID!) {
     createTask(data: {
       content: $content,
       completed: false
+      user: {
+        connect: $userId
+      }
     }) {
       _id
       content
@@ -25,19 +19,23 @@ const createTaskQuery = `
 `
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  let data
+  const user = await requireAuthentication(req, res)
+
+  if (!user) {
+    return
+  }
+
   switch (req.method) {
     case 'GET':
-      data = await request(allTasksQuery)
-      console.log(req.headers.authorization)
       res.setHeader('Cache-Control', 'No-Cache')
-      res.status(200).json([...data.allTasks.data])
+      res.status(200).json(user.tasks)
       break
     case 'PUT':
-      data = await request(createTaskQuery, {
+      const { createTask } = await request(createTaskQuery, {
         content: req.body.content,
+        userId: user._id,
       })
-      res.status(200).json(data.createTask)
+      res.status(200).json(createTask)
       break
     default:
       res.setHeader('Allow', ['GET', 'PUT'])

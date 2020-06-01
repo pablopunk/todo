@@ -1,9 +1,16 @@
 type Task @collection(name: "tasks") {
   content: String!
   completed: Boolean!
+  user: User!
+}
+
+type User @collection(name: "users") {
+  email: String!
+  tasks: [Task!] @relation
 }
 
 type Query {
   allTasks: [Task!]
   todosByCompleted(completed: Boolean!): [Task!]
+  usersByEmail(email: String!): [User!]
 }
