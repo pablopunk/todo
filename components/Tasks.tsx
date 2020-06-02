@@ -28,9 +28,11 @@ export default ({ token }: IProps) => {
   const handleNewTask = async () => {
     if (newTaskText) {
       newTaskTextSet('')
-      const newTask = { content: newTaskText }
-      await putter(token)('/api/tasks', newTask)
-      mutate([...data, newTask])
+      const newTask = { content: newTaskText, mockId: uniqueStr() }
+      mutate([...data, newTask], false)
+      putter(token)('/api/tasks', newTask).then((newTaskFromApi) =>
+        mutate([...data, newTaskFromApi])
+      )
     }
   }
 

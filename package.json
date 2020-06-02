@@ -25,7 +25,7 @@
     "typescript": "^3.9.3"
   },
   "scripts": {
-    "dev": "next",
+    "dev": "next -p 1234",
     "start": "next start",
     "build": "next build"
   },
