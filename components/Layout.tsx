@@ -17,7 +17,9 @@ interface IProps {
 export default ({ auth, children }: IProps) => {
   const [user, userSet] = React.useState(null)
 
-  auth?.magic?.user?.getMetadata().then(userSet)
+  React.useEffect(() => {
+    auth?.magic?.user?.getMetadata().then(userSet)
+  }, [auth?.magic?.user])
 
   return (
     <>

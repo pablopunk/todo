@@ -37,7 +37,7 @@ export default ({ token }: IProps) => {
   }
 
   const handleDeleteTask = (task) => {
-    deleter(token)('/api/task/' + task._id)
+    deleter(token)('/api/tasks/' + task._id)
     mutate(
       data.filter(({ _id }) => _id !== task._id),
       false
@@ -48,7 +48,7 @@ export default ({ token }: IProps) => {
     const updatedTask = { ...task, completed: !task.completed }
     const updatedTaskWithoutId = { ...updatedTask }
     delete updatedTaskWithoutId._id
-    poster(token)('/api/task/' + task._id, updatedTaskWithoutId)
+    poster(token)('/api/tasks/' + task._id, updatedTaskWithoutId)
     mutate(
       data.map((t) => (t._id === task._id ? updatedTask : t)),
       false

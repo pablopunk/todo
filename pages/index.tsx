@@ -11,8 +11,10 @@ export default (props) => {
   const auth = useMagicLink(process.env.NEXT_PUBLIC_MAGIC_LINK_API_KEY)
 
   React.useEffect(() => {
-    if (auth.loggedIn) {
+    if (auth.loggedIn && !token) {
       auth.magic.user.getIdToken().then(tokenSet)
+    } else if (!auth.loggedIn && token) {
+      tokenSet(null)
     }
   }, [auth.loggedIn])
 
@@ -27,7 +29,7 @@ export default (props) => {
     const loading = auth.loading || auth.logginIn || auth.logginOut
 
     return (
-      <Layout logout={auth.logout} loggedIn={auth.loggedIn}>
+      <Layout>
         <h1>Login</h1>
         <article>
           {!loading && (

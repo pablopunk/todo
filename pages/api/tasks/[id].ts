@@ -31,10 +31,10 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
 
   switch (req.method) {
     case 'GET':
-      const { findTaskById } = await request(taskByIdQuery, {
+      const { findTaskByID } = await request(taskByIdQuery, {
         id: req.query.id,
       })
-      res.status(200).json(findTaskById)
+      res.status(200).json(findTaskByID)
       break
     case 'POST':
       const { updateTask } = await request(updateTaskMutation, {
