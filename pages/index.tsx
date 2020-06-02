@@ -79,7 +79,7 @@ export default (props) => {
   }
 
   return (
-    <Layout logout={auth.logout} loggedIn={auth.loggedIn}>
+    <Layout auth={auth}>
       <h1>Tasks</h1>
       <Tasks token={token} />
     </Layout>

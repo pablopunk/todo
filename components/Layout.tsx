@@ -1,14 +1,34 @@
 import React from 'react'
 
-export default (props) => {
+interface IProps {
+  auth?: {
+    loggedIn: boolean
+    logout: () => void
+    magic?: {
+      user?: {
+        getMetadata: () => Promise<{ email: string }>
+      }
+      email: string
+    }
+  }
+  children: any
+}
+
+export default ({ auth, children }: IProps) => {
+  const [user, userSet] = React.useState(null)
+
+  auth?.magic?.user?.getMetadata().then(userSet)
+
   return (
     <>
       <div className="topbar">
         <button onClick={() => window['__toggleDarkMode']()}>🌙</button>
-        {props.loggedIn && <button onClick={props.logout}>Logout</button>}
+        {auth?.loggedIn && (
+          <button onClick={auth?.logout}>Logout {user?.email}</button>
+        )}
       </div>
       <div className="main-wrapper">
-        <main>{props.children}</main>
+        <main>{children}</main>
       </div>
       <style jsx global>{`
         body {
