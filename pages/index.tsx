@@ -3,6 +3,7 @@ import Layout from 'components/Layout'
 import Tasks from 'components/Tasks'
 import useMagicLink from 'use-magic-link'
 import { validate } from 'email-validator'
+import { FoldingCube as Spinner } from 'better-react-spinkit'
 
 export default (props) => {
   const [email, emailSet] = React.useState('')
@@ -39,13 +40,17 @@ export default (props) => {
               onKeyUp={(e) => e.key === 'Enter' && emailValid && loginNow()}
             />
           )}
-          <button
-            className="accent"
-            onClick={loginNow}
-            disabled={!emailValid || loading}
-          >
-            {loading ? 'Loggin in...' : 'Login'}
-          </button>
+          {loading ? (
+            <Spinner />
+          ) : (
+            <button
+              className="accent"
+              onClick={loginNow}
+              disabled={!emailValid || loading}
+            >
+              Login
+            </button>
+          )}
         </article>
         <style jsx>{`
           .invalid {
@@ -66,7 +71,11 @@ export default (props) => {
   }
 
   if (!token) {
-    return <span>Loading...</span>
+    return (
+      <Layout>
+        <Spinner />
+      </Layout>
+    )
   }
 
   return (

@@ -3,6 +3,7 @@ import uniqueStr from 'unique-string'
 import useSWR from 'swr'
 import useMagicLink from 'use-magic-link'
 import { poster, putter, deleter, fetcher } from 'lib/api'
+import { FoldingCube as Spinner } from 'better-react-spinkit'
 
 interface IProps {
   token: string
@@ -21,7 +22,7 @@ export default ({ token }: IProps) => {
   }
 
   if (!data || !Array.isArray(data)) {
-    return <span>Loading...</span>
+    return <Spinner />
   }
 
   const handleNewTask = async () => {
