@@ -7,22 +7,26 @@ import { FoldingCube as Spinner } from 'better-react-spinkit'
 
 interface IProps {
   token: string
+  initialData?: any
 }
 
-export default ({ token }: IProps) => {
+export default ({ token, initialData }: IProps) => {
   const { data, error, mutate, isValidating } = useSWR(
     '/api/tasks',
-    fetcher(token)
+    fetcher(token),
+    {
+      initialData,
+    }
   )
   const [newTaskText, newTaskTextSet] = React.useState('')
 
   if (error) {
     console.log(error)
-    return <span style={{ color: 'red' }}>Error fetching tasks:</span>
+    return <span className="error-bg">Error fetching tasks:</span>
   }
 
   if (!data || !Array.isArray(data)) {
-    return <Spinner />
+    return <Spinner className="accent-fg" />
   }
 
   const handleNewTask = async () => {
@@ -94,30 +98,42 @@ export default ({ token }: IProps) => {
                 </button>
               )}
               <button
-                style={{ marginRight: '2rem' }}
                 onClick={() => handleDeleteTask(task)}
                 disabled={!task._id}
               >
                 ❌
               </button>
             </span>
-            <span className={task.completed ? 'crossed' : ''}>
+            <span className={task.completed ? 'crossed content' : 'content'}>
               {task.content}
             </span>
           </li>
         ))}
       </ul>
       <style jsx>{`
-        ul {
-          max-width: 400px;
-        }
         li {
-          margin: 1rem 0;
-          display: flex;
-          align-items: flex-start;
+          padding: var(--space-1) var(--space-2);
+          margin: var(--space-2) 0;
+          border: 1px solid var(--color-bg-dim);
+          border-radius: 4px;
+          position: relative;
         }
-        li span {
-          display: flex;
+        li span:first-child {
+          position: absolute;
+          top: 0;
+          right: 0;
+          opacity: 0;
+          transition: opacity linear var(--transition-hover);
+          background-color: var(--color-bg);
+        }
+        li:hover span:first-child {
+          opacity: 0.9;
+        }
+        button {
+          margin-right: var(--space-1);
+          padding: var(--space-1) var(--space-2);
+          border: none;
+          font-size: 0.8rem;
         }
       `}</style>
     </>

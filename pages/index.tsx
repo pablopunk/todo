@@ -18,7 +18,9 @@ export default (props) => {
     }
   }, [auth.loggedIn])
 
-  if (!auth.loggedIn) {
+  const userReady = auth.loggedIn && token
+
+  if (!userReady) {
     const loginNow = () => {
       if (validate(email)) {
         auth.login(email)
@@ -26,7 +28,11 @@ export default (props) => {
     }
 
     const emailValid = validate(email)
-    const loading = auth.loading || auth.logginIn || auth.logginOut
+    const loading =
+      auth.loading ||
+      auth.logginIn ||
+      auth.logginOut ||
+      (auth.loggedIn && !token)
 
     return (
       <Layout>
@@ -36,17 +42,17 @@ export default (props) => {
             <input
               className={email.length > 0 && !emailValid ? 'invalid' : ''}
               type="email"
-              placeholder="enter your email"
+              placeholder="Enter your email"
               value={email}
               onChange={(e) => emailSet(e.target.value)}
               onKeyUp={(e) => e.key === 'Enter' && emailValid && loginNow()}
             />
           )}
           {loading ? (
-            <Spinner />
+            <Spinner className="accent-fg" />
           ) : (
             <button
-              className="accent"
+              className="accent-bg"
               onClick={loginNow}
               disabled={!emailValid || loading}
             >
@@ -56,7 +62,7 @@ export default (props) => {
         </article>
         <style jsx>{`
           .invalid {
-            border-color: red;
+            border-color: var(--color-error);
           }
           article {
             display: flex;
@@ -64,18 +70,16 @@ export default (props) => {
             align-items: center;
           }
           article > * {
+            margin: var(--space-2) 0;
+          }
+          button {
             width: 100%;
-            margin: 10px 0;
+          }
+          h1 {
+            margin: var(--space-3) 0;
+            text-align: center;
           }
         `}</style>
-      </Layout>
-    )
-  }
-
-  if (!token) {
-    return (
-      <Layout>
-        <Spinner />
       </Layout>
     )
   }
@@ -84,6 +88,12 @@ export default (props) => {
     <Layout auth={auth}>
       <h1>Tasks</h1>
       <Tasks token={token} />
+      <style jsx>{`
+        h1 {
+          margin: var(--space-3) 0;
+          text-align: center;
+        }
+      `}</style>
     </Layout>
   )
 }

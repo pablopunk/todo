@@ -38,9 +38,17 @@ export default ({ auth, children }: IProps) => {
           --color-fg-dim: #a3a3a3;
           --color-bg: white;
           --color-bg-dim: #ddd;
-          --color-accent: royalblue;
+          --color-accent: #931bca;
+          --color-error: red;
 
           --transition-hover: 0.3s;
+
+          font-size: 16px;
+          --space-1: 0.6rem;
+          --space-2: 0.8rem;
+          --space-3: 1.6rem;
+          --space-4: 2.4rem;
+          --space-5: 3rem;
 
           margin: 0;
           padding: 0;
@@ -50,35 +58,36 @@ export default ({ auth, children }: IProps) => {
           background-color: var(--color-bg);
         }
 
+        * {
+          box-sizing: border-box;
+        }
+
         body.dark {
           --color-fg: #ddd;
           --color-fg-dim: #454545;
           --color-bg: black;
           --color-bg-dim: #222;
-          --color-accent: #009789;
+          --color-accent: #31ffec;
+          --color-error: orangered;
         }
 
         .topbar {
           position: relative;
-          padding: 1rem 2rem;
+          padding: var(--space-1) var(--space-2);
           display: flex;
           justify-content: space-between;
         }
 
-        .main-wrapper {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-
         button {
           cursor: pointer;
+          outline: none;
           background-color: transparent;
           color: var(--color-fg);
           border: 1px solid var(--color-bg-dim);
           border-radius: 4px;
-          padding: 0.7rem 1.5rem;
+          padding: var(--space-1) var(--space-2);
           transition: background-color var(--transition-hover);
+          font-size: 1rem;
         }
 
         button:hover {
@@ -90,27 +99,44 @@ export default ({ auth, children }: IProps) => {
           cursor: no-drop;
         }
 
+        .main-wrapper {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 2vw;
+        }
+
         main {
+          position: relative;
           font-size: 1.5rem;
-          max-width: 90vw;
+          width: 96vw;
+          max-width: 500px;
+
+          display: flex;
+          flex-direction: column;
+          align-items: center;
         }
 
         ul {
           padding: 0;
           list-style: none;
+          width: 100%;
         }
 
         input {
           background: transparent;
           border: 1px solid var(--color-bg-dim);
-          border-bottom-color: var(--color-fg);
+          border-bottom-color: var(--color-fg-dim);
           border-radius: 4px;
           font-size: 1.5rem;
-          line-height: 2.2rem;
-          height: 2.2rem;
+          line-height: var(--space-4);
+          height: var(--space-4);
           color: var(--color-fg);
           vertical-align: bottom;
-          padding-left: 1rem;
+          padding: 0 var(--space-2);
+          width: 100%;
+          box-shadow: none;
+          outline: none;
         }
 
         small,
@@ -119,16 +145,34 @@ export default ({ auth, children }: IProps) => {
           color: var(--color-fg-dim);
         }
 
+        h1 {
+          color: var(--color-accent);
+        }
+
         .crossed {
           text-decoration: line-through;
         }
 
         .accent-bg {
           background-color: var(--color-accent);
+          color: var(--color-bg);
         }
 
         .accent-fg {
           color: var(--color-accent);
+        }
+
+        .accent-fg > div > div > div {
+          /* for spinners */
+          background-color: var(--color-accent) !important;
+        }
+
+        .error-bg {
+          background-color: var(--color-error);
+        }
+
+        .error-fg {
+          color: var(--color-error);
         }
       `}</style>
     </>
