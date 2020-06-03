@@ -22,7 +22,7 @@ export default ({ token, initialData }: IProps) => {
 
   if (error) {
     console.log(error)
-    return <span className="error-bg">Error fetching tasks:</span>
+    return <span className="error-fg">Error fetching tasks:</span>
   }
 
   if (!data || !Array.isArray(data)) {
