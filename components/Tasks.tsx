@@ -4,6 +4,7 @@ import { useQuery, useMutation, queryCache } from 'react-query'
 import useMagicLink from 'use-magic-link'
 import { FoldingCube as Spinner } from 'better-react-spinkit'
 import { AuthRequest } from 'lib/api'
+import { useTasks } from 'lib/hooks/tasks'
 
 interface IProps {
   token: string
@@ -14,30 +15,8 @@ export type Task = { _id: string; content: string; completed: boolean }
 
 export default ({ token, initialData }: IProps) => {
   const auth = new AuthRequest(token)
-  const { data, error, status } = useQuery<Task[], any>('tasks', () =>
-    auth.get('/api/tasks')
-  )
+  const { data, error, status, creator, completer, deleter } = useTasks(auth)
   const [newTaskText, newTaskTextSet] = React.useState('')
-  const [taskCreator] = useMutation<Task, { content }>(
-    ({ content }) =>
-      auth.put('/api/tasks', {
-        content,
-        completed: false,
-      }),
-    {
-      onSuccess: (data) =>
-        queryCache.refetchQueries(['tasks'], { exact: true }),
-    }
-  )
-  const [taskDeleter] = useMutation<Task, { _id }>(({ _id }) =>
-    auth.delete('/api/tasks/' + _id)
-  )
-  const [taskCompleter] = useMutation<Task, Task>((task) =>
-    auth.post('/api/tasks/' + task._id, {
-      ...task,
-      complete: !task.completed,
-    })
-  )
 
   if (status === 'error') {
     console.log(error)
@@ -53,7 +32,7 @@ export default ({ token, initialData }: IProps) => {
       newTaskTextSet('')
       const mockTask = { content: newTaskText, mock: true }
       queryCache.setQueryData('tasks', [...data, mockTask])
-      taskCreator(mockTask)
+      creator(mockTask)
     }
   }
 
@@ -62,7 +41,7 @@ export default ({ token, initialData }: IProps) => {
       'tasks',
       data.filter(({ _id }) => _id !== task._id)
     )
-    taskDeleter(task)
+    deleter(task)
   }
 
   const handleCompletedClick = (task) => {
@@ -71,7 +50,7 @@ export default ({ token, initialData }: IProps) => {
       'tasks',
       data.map((t) => (t._id === task._id ? updatedTask : t))
     )
-    taskCompleter(updatedTask)
+    completer(updatedTask)
   }
 
   // sort. completed===false first
