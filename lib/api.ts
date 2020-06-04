@@ -19,7 +19,26 @@ const authFetch = (token, method) => (url, body?: Object) =>
     },
   }).then((r) => r.json())
 
-export const fetcher = (token) => authFetch(token, 'GET')
-export const poster = (token) => authFetch(token, 'POST')
-export const putter = (token) => authFetch(token, 'PUT')
-export const deleter = (token) => authFetch(token, 'DELETE')
+export class AuthRequest {
+  token: string
+
+  constructor(token) {
+    this.token = token
+  }
+
+  get(url) {
+    return authFetch(this.token, 'GET')(url)
+  }
+
+  post(url, body?) {
+    return authFetch(this.token, 'POST')(url, body)
+  }
+
+  put(url, body?) {
+    return authFetch(this.token, 'PUT')(url, body)
+  }
+
+  delete(url, body?) {
+    return authFetch(this.token, 'DELETE')(url, body)
+  }
+}

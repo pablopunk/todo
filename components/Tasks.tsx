@@ -1,62 +1,77 @@
 import React from 'react'
 import uniqueStr from 'unique-string'
-import useSWR from 'swr'
+import { useQuery, useMutation, queryCache } from 'react-query'
 import useMagicLink from 'use-magic-link'
-import { poster, putter, deleter, fetcher } from 'lib/api'
 import { FoldingCube as Spinner } from 'better-react-spinkit'
+import { AuthRequest } from 'lib/api'
 
 interface IProps {
   token: string
   initialData?: any
 }
 
+export type Task = { _id: string; content: string; completed: boolean }
+
 export default ({ token, initialData }: IProps) => {
-  const { data, error, mutate, isValidating } = useSWR(
-    '/api/tasks',
-    fetcher(token),
-    {
-      initialData,
-    }
+  const auth = new AuthRequest(token)
+  const { data, error, status } = useQuery<Task[], any>('tasks', () =>
+    auth.get('/api/tasks')
   )
   const [newTaskText, newTaskTextSet] = React.useState('')
+  const [taskCreator] = useMutation<Task, { content }>(
+    ({ content }) =>
+      auth.put('/api/tasks', {
+        content,
+        completed: false,
+      }),
+    {
+      onSuccess: (data) =>
+        queryCache.refetchQueries(['tasks'], { exact: true }),
+    }
+  )
+  const [taskDeleter] = useMutation<Task, { _id }>(({ _id }) =>
+    auth.delete('/api/tasks/' + _id)
+  )
+  const [taskCompleter] = useMutation<Task, Task>((task) =>
+    auth.post('/api/tasks/' + task._id, {
+      ...task,
+      complete: !task.completed,
+    })
+  )
 
-  if (error) {
+  if (status === 'error') {
     console.log(error)
-    return <span className="error-fg">Error fetching tasks:</span>
+    return <span className="error-fg">Error fetching tasks</span>
   }
 
-  if (!data || !Array.isArray(data)) {
+  if (status === 'loading') {
     return <Spinner className="accent-fg" />
   }
 
   const handleNewTask = async () => {
     if (newTaskText) {
       newTaskTextSet('')
-      const newTask = { content: newTaskText, mockId: uniqueStr() }
-      mutate([...data, newTask], false)
-      putter(token)('/api/tasks', newTask).then((newTaskFromApi) =>
-        mutate([...data, newTaskFromApi])
-      )
+      const mockTask = { content: newTaskText, mock: true }
+      queryCache.setQueryData('tasks', [...data, mockTask])
+      taskCreator(mockTask)
     }
   }
 
   const handleDeleteTask = (task) => {
-    deleter(token)('/api/tasks/' + task._id)
-    mutate(
-      data.filter(({ _id }) => _id !== task._id),
-      false
+    queryCache.setQueryData(
+      'tasks',
+      data.filter(({ _id }) => _id !== task._id)
     )
+    taskDeleter(task)
   }
 
   const handleCompletedClick = (task) => {
     const updatedTask = { ...task, completed: !task.completed }
-    const updatedTaskWithoutId = { ...updatedTask }
-    delete updatedTaskWithoutId._id
-    poster(token)('/api/tasks/' + task._id, updatedTaskWithoutId)
-    mutate(
-      data.map((t) => (t._id === task._id ? updatedTask : t)),
-      false
+    queryCache.setQueryData(
+      'tasks',
+      data.map((t) => (t._id === task._id ? updatedTask : t))
     )
+    taskCompleter(updatedTask)
   }
 
   // sort. completed===false first

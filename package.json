@@ -12,7 +12,7 @@
     "next": "canary",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "swr": "^0.2.2",
+    "react-query": "^1.5.5",
     "unique-string": "^2.0.0",
     "use-magic-link": "pablopunk/use-magic-link#patch-1"
   },
